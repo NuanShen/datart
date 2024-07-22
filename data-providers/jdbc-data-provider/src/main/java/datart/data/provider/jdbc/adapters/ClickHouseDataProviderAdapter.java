@@ -18,10 +18,12 @@
 
 package datart.data.provider.jdbc.adapters;
 
+import com.clickhouse.data.value.UnsignedLong;
 import org.apache.commons.lang3.StringUtils;
 
 import java.net.URI;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ClickHouseDataProviderAdapter extends JdbcDataProviderAdapter {
@@ -36,5 +38,13 @@ public class ClickHouseDataProviderAdapter extends JdbcDataProviderAdapter {
             return null;
         }
         return super.readCurrDatabase(conn, isCatalog);
+    }
+
+    @Override
+    protected Object getObjFromResultSet(ResultSet rs, int columnIndex) throws SQLException {
+        if (rs.getObject(columnIndex) instanceof UnsignedLong) {
+            return ((UnsignedLong) rs.getObject(columnIndex)).longValue();
+        }
+        return super.getObjFromResultSet(rs, columnIndex);
     }
 }
