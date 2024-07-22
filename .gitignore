@@ -10,3 +10,6 @@
 
 *.iml
 *.zip
+/nohup.out
+/logs/*.log
+/bin/h2/datart.demo.trace.db
