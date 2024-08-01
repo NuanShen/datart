@@ -288,9 +288,7 @@ public class SqlBuilder {
                 column = SqlNodeUtils.createSqlIdentifier(operator.getColumnNames(withNamePrefix, namePrefix));
             }
         }
-        List<SqlNode> nodes = Arrays.stream(operator.getValues())
-                .map(this::convertTypedValue)
-                .collect(Collectors.toList());
+        List<SqlNode> nodes = Arrays.stream(operator.getValues()).map(this::convertTypedValue).collect(Collectors.toList());
 
         SqlNode[] sqlNodes = null;
 

@@ -78,9 +78,7 @@ public class OracleDataProviderAdapter extends JdbcDataProviderAdapter {
     @Override
     public Dataframe executeOnSource(QueryScript script, ExecuteParam executeParam) throws Exception {
 
-        SqlScriptRender render = new SqlScriptRender(script
-                , executeParam
-                , getSqlDialect());
+        SqlScriptRender render = new SqlScriptRender(script, executeParam, getSqlDialect());
 
         String sql = render.render(true, false, false);
 
