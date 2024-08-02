@@ -20,7 +20,10 @@ package datart.data.provider.optimize;
 
 import datart.core.common.Cache;
 import datart.core.common.CacheFactory;
-import datart.core.data.provider.*;
+import datart.core.data.provider.DataProviderSource;
+import datart.core.data.provider.Dataframe;
+import datart.core.data.provider.ExecuteParam;
+import datart.core.data.provider.QueryScript;
 import org.apache.commons.collections4.map.LRUMap;
 
 import java.util.Map;
