@@ -34,6 +34,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 
@@ -292,7 +294,7 @@ public class SqlBuilder {
 
         SqlNode[] sqlNodes = null;
 
-        org.apache.calcite.sql.SqlOperator sqlOp = null;
+        SqlOperator sqlOp = null;
         switch (operator.getSqlOperator()) {
             case IN:
                 sqlOp = SqlStdOperatorTable.IN;
@@ -327,19 +329,31 @@ public class SqlBuilder {
                 sqlNodes = new SqlNode[]{column, nodes.get(0)};
                 break;
             case LIKE:
-                operator.getValues()[0].setValue("%" + operator.getValues()[0].getValue() + "%");
-                sqlOp = SqlStdOperatorTable.LIKE;
-                sqlNodes = new SqlNode[]{column, convertTypedValue(operator.getValues()[0])};
+                if (operator.getValues().length == 1) {
+                    sqlOp = SqlStdOperatorTable.LIKE;
+                    sqlNodes = getOperands(column, operator.getValues()[0], v -> "%" + v + "%");
+                } else if (operator.getValues().length > 1) {
+                    sqlOp = SqlStdOperatorTable.OR;
+                    sqlNodes = Arrays.stream(operator.getValues()).map(newSqlBasicCall(column, v -> "%" + v + "%")).toArray(SqlNode[]::new);
+                }
                 break;
             case PREFIX_LIKE:
-                operator.getValues()[0].setValue(operator.getValues()[0].getValue() + "%");
-                sqlOp = SqlStdOperatorTable.LIKE;
-                sqlNodes = new SqlNode[]{column, convertTypedValue(operator.getValues()[0])};
+                if (operator.getValues().length == 1) {
+                    sqlOp = SqlStdOperatorTable.LIKE;
+                    sqlNodes = getOperands(column, operator.getValues()[0], v -> v + "%");
+                } else if (operator.getValues().length > 1) {
+                    sqlOp = SqlStdOperatorTable.OR;
+                    sqlNodes = Arrays.stream(operator.getValues()).map(newSqlBasicCall(column, v -> v + "%")).toArray(SqlNode[]::new);
+                }
                 break;
             case SUFFIX_LIKE:
-                operator.getValues()[0].setValue("%" + operator.getValues()[0].getValue());
-                sqlOp = SqlStdOperatorTable.LIKE;
-                sqlNodes = new SqlNode[]{column, convertTypedValue(operator.getValues()[0])};
+                if (operator.getValues().length == 1) {
+                    sqlOp = SqlStdOperatorTable.LIKE;
+                    sqlNodes = getOperands(column, operator.getValues()[0], v -> "%" + v);
+                } else if (operator.getValues().length > 1) {
+                    sqlOp = SqlStdOperatorTable.OR;
+                    sqlNodes = Arrays.stream(operator.getValues()).map(newSqlBasicCall(column, v -> "%" + v)).toArray(SqlNode[]::new);
+                }
                 break;
             case NOT_LIKE:
                 operator.getValues()[0].setValue("%" + operator.getValues()[0].getValue() + "%");
@@ -382,6 +396,14 @@ public class SqlBuilder {
                 Exceptions.msg("message.provider.sql.type.unsupported", operator.getSqlOperator().name());
         }
         return new SqlBasicCall(sqlOp, sqlNodes, SqlParserPos.ZERO);
+    }
+
+    private Function<SingleTypedValue, SqlBasicCall> newSqlBasicCall(SqlNode column, UnaryOperator<Object> formater) {
+        return value -> new SqlBasicCall(SqlStdOperatorTable.LIKE, getOperands(column, value, formater), SqlParserPos.ZERO);
+    }
+
+    private SqlNode[] getOperands(SqlNode column, SingleTypedValue value, UnaryOperator<Object> formater) {
+        return new SqlNode[]{column, convertTypedValue(new SingleTypedValue(formater.apply(value.getValue()), value.getValueType()))};
     }
 
     /**
