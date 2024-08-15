@@ -926,7 +926,7 @@
         "shortLink": "短链接",
         "type": "类型",
         "expireDate": "过期时间",
-        "operate": "操作",
+        "operate": "修改",
         "copy": "复制链接",
         "copySuccess": "复制成功",
         "delete": "删除",
@@ -934,7 +934,8 @@
         "deleteError": "删除失败",
         "sureDelete": "确定要删除吗？",
         "noDataTip": "暂无链接，点击右上角添加",
-        "Permanent": "永久"
+        "Permanent": "永久",
+        "genEisMenu": "生成OA菜单"
       }
     },
     "board": {

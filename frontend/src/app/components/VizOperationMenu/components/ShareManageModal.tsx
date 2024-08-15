@@ -23,6 +23,7 @@ import { FC, memo, useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components/macro';
 import { SPACE_TIMES } from 'styles/StyleConstants';
 import { getServerDomain, request2 } from 'utils/request';
+import GenEisMenuModal from './GenEisMenuModal';
 import ShareLinkModal from './ShareLinkModal';
 import { ShareDetail } from './slice/type';
 
@@ -57,6 +58,7 @@ const ShareManageModal: FC<{
     orgId,
   }) => {
     const [showShareLinkModal, setShowShareLinkModal] = useState(false);
+    const [showGenEisMenuModal, setShowGenEisMenuModal] = useState(false);
     const [listData, setListData] = useState<ShareDetail[]>([]);
     const [manipulatedData, setManipulatedData] = useState<ShareDetail | null>(
       null,
@@ -169,12 +171,22 @@ const ShareManageModal: FC<{
     const handleCancelModalFn = useCallback(() => {
       setManipulatedData(null);
       setShowShareLinkModal(false);
+      setShowGenEisMenuModal(false);
     }, []);
 
     const handleOperateFn = useCallback((share: ShareDetail) => {
       setManipulatedData(share);
       setShowShareLinkModal(true);
     }, []);
+
+    const handleGenEisMenuFn = useCallback(
+      (share: ShareDetail) => {
+        let linkPath = getFullShareLinkPath(share);
+
+        setShowGenEisMenuModal(true);
+      },
+      [getFullShareLinkPath],
+    );
 
     const handleOkFn = useCallback(
       async paramsData => {
@@ -236,6 +248,15 @@ const ShareManageModal: FC<{
                 >
                   {t('shareList.operate')}
                 </Button>
+                <Button
+                  type="primary"
+                  ghost
+                  onClick={() => {
+                    handleGenEisMenuFn(share);
+                  }}
+                >
+                  {t('shareList.genEisMenu')}
+                </Button>
                 <Popconfirm
                   title={t('shareList.sureDelete')}
                   onConfirm={() => {
@@ -252,6 +273,7 @@ const ShareManageModal: FC<{
     }, [
       t,
       handleOperateFn,
+      handleGenEisMenuFn,
       handleCopyToClipboard,
       deleteShareLinkFn,
       getFullShareLinkPath,
@@ -265,7 +287,7 @@ const ShareManageModal: FC<{
 
     return (
       <StyledShareLinkModal
-        width={1300}
+        width={1500}
         title={
           <ModalHeader>
             <span>{t('shareList.shareList')}</span>
@@ -302,6 +324,14 @@ const ShareManageModal: FC<{
           onOk={handleOkFn}
           onCancel={handleCancelModalFn}
         ></ShareLinkModal>
+        <GenEisMenuModal
+          shareData={manipulatedData}
+          orgId={orgId}
+          vizType={vizType}
+          visibility={showGenEisMenuModal}
+          onOk={handleOkFn}
+          onCancel={handleCancelModalFn}
+        ></GenEisMenuModal>
       </StyledShareLinkModal>
     );
   },
@@ -314,6 +344,7 @@ const StyledShareLinkModal = styled(Modal)`
     padding-right: ${SPACE_TIMES(4)};
     padding-left: ${SPACE_TIMES(4)};
   }
+
   .ant-modal-body {
     padding: 0px;
   }

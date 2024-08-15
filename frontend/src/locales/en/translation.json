@@ -936,7 +936,8 @@
         "deleteError": "Failed to delete",
         "sureDelete": "Confirm to delete?",
         "noDataTip": "No link yet, click on the top right corner to add",
-        "Permanent": "Permanent"
+        "Permanent": "Permanent",
+        "genEisMenu": "generate EIS menu"
       }
     },
     "board": {

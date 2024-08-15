@@ -34,7 +34,6 @@ import datart.core.base.exception.BaseException;
 import datart.core.base.exception.Exceptions;
 import datart.core.common.RequestContext;
 import datart.core.data.provider.*;
-import datart.core.data.provider.sql.FilterOperator;
 import datart.core.entity.RelSubjectColumns;
 import datart.core.entity.Source;
 import datart.core.entity.View;
@@ -49,7 +48,6 @@ import datart.server.service.VariableService;
 import datart.server.service.ViewService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -277,9 +275,9 @@ public class DataProviderServiceImpl extends BaseService implements DataProvider
 
         Dataframe dataframe = dataProviderManager.execute(providerSource, queryScript, queryParam);
 
-        if (!viewExecuteParam.isScript() || !scriptPermission) {
+        /*if (!viewExecuteParam.isScript() || !scriptPermission) {
             dataframe.setScript(null);
-        }
+        }*/
         return dataframe;
     }
 
