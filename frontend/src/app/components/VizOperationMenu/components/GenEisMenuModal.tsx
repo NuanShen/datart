@@ -35,7 +35,7 @@ import { FC, memo, useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components/macro';
 import { SPACE } from 'styles/StyleConstants';
-import { AuthenticationModeType, RowPermissionByType } from './slice/constants';
+import { AuthenticationModeType, RowPermissionByType, SuperModuleType } from './slice/constants';
 import { ShareDetail } from './slice/type';
 
 const GenEisMenuModal: FC<{
@@ -143,7 +143,7 @@ const GenEisMenuModal: FC<{
     <StyledGenEisMenuModal
       title={t('share.shareLink')}
       visible={visibility}
-      okText={shareData ? t('share.save') : t('share.generateLink')}
+      okText={t('share.save')}
       onOk={() =>
         handleOkFn?.({
           expiryDate,
@@ -164,85 +164,24 @@ const GenEisMenuModal: FC<{
         wrapperCol={{ span: 16 }}
         autoComplete="off"
       >
-        <FormItemEx label={t('share.expireDate')}>
-          <DatePicker
-            value={expiryDate ? moment(expiryDate, TIME_FORMATTER) : null}
-            showTime
-            disabledDate={current => {
-              return current && current < moment().endOf('day');
-            }}
-            onChange={(_, dateString) => {
-              setExpiryDate(dateString);
-            }}
-          />
-        </FormItemEx>
-        <FormItemEx label={t('share.verificationMethod')}>
-          <Radio.Group
-            onChange={handleAuthenticationMode}
-            value={authenticationMode}
+        <FormItemEx label={t('share.selectModule')}>
+          <StyledSelection
+            onChange={handleChangeMembers}
+            placeholder={t('share.selectModule')}
+            maxTagCount="responsive"
+            optionFilterProp="label"
+            value={selectUsers || []}
           >
-            <Radio value={AuthenticationModeType.none}>{t('share.NONE')}</Radio>
-            <Radio value={AuthenticationModeType.code}>{t('share.CODE')}</Radio>
-            <Radio value={AuthenticationModeType.login}>
-              {t('share.LOGIN')}
-            </Radio>
-          </Radio.Group>
+            <Select.Option key={1} value={'PM_M009'} label={'运营报表'}>{'运营报表'}</Select.Option>
+            <Select.Option key={2} value={'FIN_M005'} label={'财务报表'}>{'财务报表'}</Select.Option>
+            <Select.Option key={4} value={'BM_M004'} label={'预算报表'}>{'预算报表'}</Select.Option>
+            <Select.Option key={5} value={'CRM_M008'} label={'商务报表'}>{'商务报表'}</Select.Option>
+            <Select.Option key={6} value={'COMMON_M003'} label={'系统报表'}>{'系统报表'}</Select.Option>
+            <Select.Option key={7} value={'FILEMANAGE_M003'} label={'质量报表'}>{'质量报表'}</Select.Option>
+            <Select.Option key={8} value={'PROD_M003'} label={'产品报表'}>{'产品报表'}</Select.Option>
+            <Select.Option key={9} value={'HR_M010'} label={'人力报表'}>{'人力报表'}</Select.Option>
+          </StyledSelection>
         </FormItemEx>
-        {authenticationMode === AuthenticationModeType.login && (
-          <>
-            <FormItemEx label={t('share.dataPermission')}>
-              <Radio.Group
-                onChange={handleRowPermissionBy}
-                value={rowPermissionBy}
-              >
-                <Radio value={RowPermissionByType.visitor}>
-                  {t('share.loginUser')}
-                </Radio>
-                <Radio value={RowPermissionByType.creator}>
-                  {t('share.shareUser')}
-                </Radio>
-              </Radio.Group>
-            </FormItemEx>
-            {isOwner && (
-              <FormItemEx label={t('share.userOrRole')}>
-                <Space>
-                  <StyledSelection
-                    onChange={handleChangeRoles}
-                    placeholder={t('share.selectRole')}
-                    mode="multiple"
-                    maxTagCount="responsive"
-                    optionFilterProp="label"
-                    value={selectRoles || []}
-                  >
-                    {rolesList?.map((v, i) => {
-                      return (
-                        <Select.Option key={i} value={v.id} label={v.name}>
-                          {v.name}
-                        </Select.Option>
-                      );
-                    })}
-                  </StyledSelection>
-                  <StyledSelection
-                    onChange={handleChangeMembers}
-                    placeholder={t('share.selectUser')}
-                    mode="multiple"
-                    maxTagCount="responsive"
-                    optionFilterProp="label"
-                    value={selectUsers || []}
-                  >
-                    {usersList?.map((v, i) => {
-                      return (
-                        <Select.Option key={i} value={v.id} label={v.username}>
-                          {v.username}
-                        </Select.Option>
-                      );
-                    })}
-                  </StyledSelection>
-                </Space>
-              </FormItemEx>
-            )}
-          </>
-        )}
       </Form>
     </StyledGenEisMenuModal>
   );

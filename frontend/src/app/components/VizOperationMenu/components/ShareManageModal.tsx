@@ -188,6 +188,11 @@ const ShareManageModal: FC<{
       [getFullShareLinkPath],
     );
 
+    const handleCancelGenEisMenuModalFn = useCallback(() => {
+      setManipulatedData(null);
+      setShowGenEisMenuModal(false);
+    }, []);
+
     const handleOkFn = useCallback(
       async paramsData => {
         const { id } = paramsData;

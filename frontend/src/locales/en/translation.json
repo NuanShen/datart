@@ -921,7 +921,8 @@
         "userOrRole": "Assign roles/members",
         "selectRole": "Select role",
         "selectUser": "Select members",
-        "save": "Save"
+        "save": "Save",
+        "selectModule": "Select Module"
       },
       "shareList": {
         "shareList": "Share link list",

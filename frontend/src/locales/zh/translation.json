@@ -919,7 +919,8 @@
         "userOrRole": "指定角色/成员",
         "selectRole": "选择角色",
         "selectUser": "选择成员",
-        "save": "保存"
+        "save": "保存",
+        "selectModule": "选择模块"
       },
       "shareList": {
         "shareList": "分享链接列表",
