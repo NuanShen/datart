@@ -57,6 +57,7 @@ export interface DataSourceViewModel {
   index: number | null;
   isFolder: boolean;
   permissionArray: PermissionLevels[];
+  rolePermissionArray: PermissionLevels[];
 }
 
 export type DataSourceTreeNode = DataSourceViewModel &
@@ -89,6 +90,7 @@ export interface SubjectPermissions {
   subjectId: string;
   subjectType: SubjectTypes;
   permissionInfos: Privilege[];
+  rolePermissionInfos: Privilege[];
 }
 
 export interface GetPermissionParams<T> {

@@ -380,6 +380,7 @@ public class RoleServiceImpl extends BaseService implements RoleService {
         permissions.setSubjectId(subjectId);
         permissions.setSubjectType(subjectType);
         permissions.setPermissionInfos(new LinkedList<>());
+        permissions.setRolePermissionInfos(new LinkedList<>());
         Role orgOwnerRole = roleMapper.selectOrgOwnerRole(orgId);
         Set<String> roleIds = new HashSet<>();
         if (subjectType == SubjectType.USER_ROLE) {
@@ -409,12 +410,27 @@ public class RoleServiceImpl extends BaseService implements RoleService {
             return permissions;
         }
 
-        Map<String, List<RelRoleResource>> groupedResource = resourceList
-                .stream()
-                .collect(Collectors.groupingBy(RelRoleResource::getResourceType));
+        Map<String, List<RelRoleResource>> groupedResource = resourceList.stream().collect(Collectors.groupingBy(RelRoleResource::getResourceType));
         for (String key : groupedResource.keySet()) {
             permissions.getPermissionInfos().addAll(convertPermissionInfo(groupedResource.get(key), subjectType, subjectId));
         }
+
+        if (subjectType == SubjectType.USER_ROLE) {
+            List<Role> roles = roleMapper.selectUserNormalRoles(orgId, subjectId);
+            if (CollectionUtils.isEmpty(roles)) {
+                return permissions;
+            }
+            Set<String> collect = roles.stream().map(Role::getId).collect(Collectors.toSet());
+            List<RelRoleResource> relRoleResources = rrrMapper.selectByRoleIds(collect);
+            if (CollectionUtils.isEmpty(relRoleResources)) {
+                return permissions;
+            }
+            Map<String, List<RelRoleResource>> stringListMap = relRoleResources.stream().collect(Collectors.groupingBy(RelRoleResource::getResourceType));
+            for (String key : stringListMap.keySet()) {
+                permissions.getRolePermissionInfos().addAll(convertPermissionInfo(stringListMap.get(key), subjectType, subjectId));
+            }
+        }
+
         return permissions;
     }
 
@@ -430,10 +446,7 @@ public class RoleServiceImpl extends BaseService implements RoleService {
         if (CollectionUtils.isEmpty(relRoleResources)) {
             return permissions;
         }
-        List<String> roleIds = relRoleResources
-                .stream()
-                .map(RelRoleResource::getRoleId)
-                .collect(Collectors.toList());
+        List<String> roleIds = relRoleResources.stream().map(RelRoleResource::getRoleId).collect(Collectors.toList());
         List<Role> roles = roleMapper.listByIds(roleIds);
         HashMap<String, Role> roleMap = new HashMap<>();
         roles.forEach(role -> roleMap.put(role.getId(), role));
@@ -463,18 +476,17 @@ public class RoleServiceImpl extends BaseService implements RoleService {
     }
 
     private List<PermissionInfo> convertPermissionInfo(List<RelRoleResource> relRoleResources, SubjectType subjectType, String subjectId) {
-        return relRoleResources.stream()
-                .map(rrr -> {
-                    PermissionInfo info = new PermissionInfo();
-                    info.setSubjectType(subjectType);
-                    info.setSubjectId(subjectId);
-                    info.setId(rrr.getId());
-                    info.setOrgId(rrr.getOrgId());
-                    info.setResourceType(ResourceType.valueOf(rrr.getResourceType()));
-                    info.setResourceId(rrr.getResourceId());
-                    info.setPermission(rrr.getPermission());
-                    return info;
-                }).collect(Collectors.toList());
+        return relRoleResources.stream().map(rrr -> {
+            PermissionInfo info = new PermissionInfo();
+            info.setSubjectType(subjectType);
+            info.setSubjectId(subjectId);
+            info.setId(rrr.getId());
+            info.setOrgId(rrr.getOrgId());
+            info.setResourceType(ResourceType.valueOf(rrr.getResourceType()));
+            info.setResourceId(rrr.getResourceId());
+            info.setPermission(rrr.getPermission());
+            return info;
+        }).collect(Collectors.toList());
     }
 
     @Override

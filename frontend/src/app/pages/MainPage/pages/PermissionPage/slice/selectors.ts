@@ -135,6 +135,26 @@ export const makeSelectPrivileges = () =>
     },
   );
 
+export const makeSelectRolePrivileges = () =>
+  createSelector(
+    [
+      selectPermissionMap,
+      (_, props: SelectPrivilegesProps) => props.viewpoint,
+      (_, props: SelectPrivilegesProps) => props.dataSourceType,
+    ],
+    (permissionMap, viewpoint, dataSourceType) => {
+      if (viewpoint === Viewpoints.Subject) {
+        const permissionObject = permissionMap[viewpoint].permissionObject as
+          | SubjectPermissions
+          | undefined;
+        return permissionObject?.rolePermissionInfos?.filter(
+          ({ resourceType }) => resourceType === dataSourceType,
+        );
+      }
+      return [];
+    },
+  );
+
 export const selectPermissionLoading = createSelector(
   [
     selectPermissionMap,

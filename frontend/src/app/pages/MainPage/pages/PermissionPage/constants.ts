@@ -55,6 +55,11 @@ export enum PermissionLevels {
   Create = (1 << 7) | Manage,
 }
 
+export enum PermissionFrom {
+  Role = 'ROLE',
+  Self = 'SELF',
+}
+
 export const RESOURCE_TYPE_PERMISSION_MAPPING = {
   [ResourceTypes.Viz]: [
     PermissionLevels.Read,

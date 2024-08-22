@@ -31,7 +31,10 @@ import {
   Viewpoints,
   VizResourceSubTypes,
 } from '../../constants';
-import { makeSelectPrivileges } from '../../slice/selectors';
+import {
+  makeSelectPrivileges,
+  makeSelectRolePrivileges,
+} from '../../slice/selectors';
 import { grantPermissions } from '../../slice/thunks';
 import {
   DataSourceTreeNode,
@@ -85,8 +88,12 @@ export const VizPermissionForm = memo(
     );
     const dispatch = useDispatch();
     const selectPrivileges = useMemo(makeSelectPrivileges, []);
+    const selectRolePrivileges = useMemo(makeSelectRolePrivileges, []);
     const privileges = useSelector(state =>
       selectPrivileges(state, { viewpoint, dataSourceType }),
+    );
+    const rolePrivileges = useSelector(state =>
+      selectRolePrivileges(state, { viewpoint, dataSourceType }),
     );
     const t = useI18NPrefix('permission');
 
@@ -100,6 +107,7 @@ export const VizPermissionForm = memo(
         return setTreeDataWithPrivilege(
           originTreeData,
           [...privileges],
+          [],
           viewpoint,
           viewpointType,
           dataSourceType,
@@ -195,6 +203,7 @@ export const VizPermissionForm = memo(
                       base,
                     )
                   : permissionArray,
+              getDefaultPermissionArray(),
               getDefaultPermissionArray(),
             );
             // 根据改变后的树重新计算出权限列表
@@ -345,6 +354,7 @@ export const VizPermissionForm = memo(
                 dataSource={folders}
                 resourceLoading={folderListLoading}
                 privileges={privileges}
+                rolePrivileges={rolePrivileges}
                 onPrivilegeChange={privilegeChange}
               />
             </Form.Item>
@@ -364,6 +374,7 @@ export const VizPermissionForm = memo(
                 dataSource={storyboards}
                 resourceLoading={storyboardListLoading}
                 privileges={privileges}
+                rolePrivileges={rolePrivileges}
                 onPrivilegeChange={privilegeChange}
               />
             </Form.Item>
@@ -384,7 +395,7 @@ const Wrapper = styled.div`
 `;
 
 const FormContent = styled(Form)`
-  width: 960px;
+  width: 1230px;
 
   .vizTable {
     display: none;

@@ -29,7 +29,10 @@ import {
   SubjectTypes,
   Viewpoints,
 } from '../../constants';
-import { makeSelectPrivileges } from '../../slice/selectors';
+import {
+  makeSelectPrivileges,
+  makeSelectRolePrivileges,
+} from '../../slice/selectors';
 import { grantPermissions } from '../../slice/thunks';
 import {
   DataSourceTreeNode,
@@ -75,8 +78,12 @@ export const PermissionForm = memo(
   }: PermissionFormProps) => {
     const dispatch = useDispatch();
     const selectPrivileges = useMemo(makeSelectPrivileges, []);
+    const selectRolePrivileges = useMemo(makeSelectRolePrivileges, []);
     const privileges = useSelector(state =>
       selectPrivileges(state, { viewpoint, dataSourceType }),
+    );
+    const rolePrivileges = useSelector(state =>
+      selectRolePrivileges(state, { viewpoint, dataSourceType }),
     );
     const t = useI18NPrefix('permission');
 
@@ -153,6 +160,7 @@ export const PermissionForm = memo(
                       base,
                     )
                   : permissionArray,
+              getDefaultPermissionArray(),
               getDefaultPermissionArray(),
             );
             // 根据改变后的树重新计算出权限列表
@@ -289,6 +297,7 @@ export const PermissionForm = memo(
                 dataSource={dataSource}
                 resourceLoading={resourceLoading}
                 privileges={privileges}
+                rolePrivileges={rolePrivileges}
                 onPrivilegeChange={privilegeChange}
               />
             </Form.Item>

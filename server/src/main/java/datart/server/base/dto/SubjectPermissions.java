@@ -19,4 +19,6 @@ public class SubjectPermissions {
 
     private List<PermissionInfo> permissionInfos;
 
+    private List<PermissionInfo> rolePermissionInfos;
+
 }

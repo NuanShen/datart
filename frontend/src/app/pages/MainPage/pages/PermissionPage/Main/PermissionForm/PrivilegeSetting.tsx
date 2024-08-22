@@ -33,6 +33,7 @@ import { getChangedPermission, getPrivilegeSettingType } from './utils';
 
 interface PrivilegeSettingProps {
   record: DataSourceTreeNode;
+  permissionArrayName: string;
   viewpoint: Viewpoints;
   viewpointType: ResourceTypes | SubjectTypes;
   dataSourceType: ResourceTypes | SubjectTypes;
@@ -43,16 +44,19 @@ interface PrivilegeSettingProps {
     index: number,
     base: PermissionLevels,
   ) => void;
+  disabled: boolean;
 }
 
 export const PrivilegeSetting = memo(
   ({
     record,
+    permissionArrayName,
     viewpoint,
     viewpointType,
     dataSourceType,
     vizSubTypes,
     onChange,
+    disabled,
   }: PrivilegeSettingProps) => {
     const [values, setValues] = useState<PermissionLevels[]>(
       getDefaultPermissionArray(vizSubTypes),
@@ -79,8 +83,8 @@ export const PrivilegeSetting = memo(
     );
 
     useEffect(() => {
-      setValues(record.permissionArray);
-    }, [record]);
+      setValues(record[permissionArrayName]);
+    }, [record, permissionArrayName]);
     return (
       <Space>
         {RESOURCE_TYPE_PERMISSION_MAPPING[
@@ -91,6 +95,7 @@ export const PrivilegeSetting = memo(
               key={PermissionLevels[level]}
               checked={level === values[index]}
               onChange={privilegeChange(index, level)}
+              disabled={disabled}
             >
               {t(
                 `privilegeLabel.${(

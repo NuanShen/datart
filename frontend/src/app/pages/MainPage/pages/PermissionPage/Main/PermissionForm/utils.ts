@@ -18,6 +18,7 @@
 
 import { fastDeleteArrayElement, getDiffParams } from 'utils/utils';
 import {
+  PermissionFrom,
   PermissionLevels,
   ResourceTypes,
   RESOURCE_TYPE_PERMISSION_MAPPING,
@@ -37,19 +38,32 @@ export function getTreeNodeWithPermission(
   getPermissionFunc: (
     node: Omit<DataSourceTreeNode, 'children'>,
     parentPermissionArray: PermissionLevels[],
+    from: PermissionFrom,
   ) => PermissionLevels[],
   parentPermissionArray: PermissionLevels[],
+  parentRolePermissionArray: PermissionLevels[],
 ): DataSourceTreeNode[] {
   return nodes.map(({ children, ...rest }) => {
-    const permissionArray = getPermissionFunc(rest, parentPermissionArray);
+    const permissionArray = getPermissionFunc(
+      rest,
+      parentPermissionArray,
+      PermissionFrom.Self,
+    );
+    const rolePermissionArray = getPermissionFunc(
+      rest,
+      parentRolePermissionArray,
+      PermissionFrom.Role,
+    );
     return {
       ...rest,
       permissionArray,
+      rolePermissionArray,
       ...(children && {
         children: getTreeNodeWithPermission(
           children,
           getPermissionFunc,
           permissionArray,
+          rolePermissionArray,
         ),
       }),
     };
@@ -59,6 +73,7 @@ export function getTreeNodeWithPermission(
 export function setTreeDataWithPrivilege(
   treeData: DataSourceTreeNode[],
   privileges: Privilege[],
+  rolePrivileges: Privilege[],
   viewpoint: Viewpoints,
   viewpointType: SubjectTypes | ResourceTypes,
   dataSourceType: SubjectTypes | ResourceTypes,
@@ -66,39 +81,45 @@ export function setTreeDataWithPrivilege(
 ): DataSourceTreeNode[] {
   return getTreeNodeWithPermission(
     treeData,
-    (node, parentPermissionArray) => {
+    (node, parentPermissionArray, from) => {
       let permissionArray = parentPermissionArray;
-
-      for (let i = 0; i < privileges.length; i += 1) {
+      let privilegeData =
+        from === PermissionFrom.Self ? privileges : rolePrivileges;
+      for (let i = 0; i < privilegeData.length; i += 1) {
         if (viewpoint === Viewpoints.Subject) {
           if (
             isRootId(node.id, node.type as ResourceTypes) &&
-            isRootId(privileges[i].resourceId, privileges[i].resourceType) &&
-            node.id === privileges[i].resourceId
+            isRootId(
+              privilegeData[i].resourceId,
+              privilegeData[i].resourceType,
+            ) &&
+            node.id === privilegeData[i].resourceId
           ) {
             permissionArray = parsePermission(
-              privileges[i].permission,
-              privileges[i].resourceType,
+              privilegeData[i].permission,
+              privilegeData[i].resourceType,
               vizSubTypes,
             );
-            fastDeleteArrayElement(privileges, i);
+            fastDeleteArrayElement(privilegeData, i);
             break;
           }
         }
 
-        if (node.id === privileges[i][`${getInverseViewpoints(viewpoint)}Id`]) {
+        if (
+          node.id === privilegeData[i][`${getInverseViewpoints(viewpoint)}Id`]
+        ) {
           permissionArray = parsePermission(
-            privileges[i].permission,
+            privilegeData[i].permission,
             getPrivilegeSettingType(viewpoint, viewpointType, dataSourceType)!,
             vizSubTypes,
           );
-          fastDeleteArrayElement(privileges, i);
+          fastDeleteArrayElement(privilegeData, i);
           break;
         }
       }
-
       return permissionArray;
     },
+    getDefaultPermissionArray(),
     getDefaultPermissionArray(),
   );
 }

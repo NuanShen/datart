@@ -134,5 +134,24 @@ public interface RoleMapperExt extends RoleMapper {
     })
     List<Role> selectUserRoles(@Param("orgId") String orgId, @Param("userId") String userId);
 
+    @Select({
+            "SELECT ",
+            "	r.*  ",
+            "FROM ",
+            "	role r ",
+            "	JOIN rel_role_user rru ON r.id IN ( ",
+            "	SELECT DISTINCT ",
+            "		r1.id  ",
+            "	FROM ",
+            "		role r1  ",
+            "	WHERE ",
+            "		r1.org_id = #{orgId}) ",
+            "		 ",
+            "	AND r.id = rru.role_id  ",
+            "	AND r.type = 'NORMAL'  ",
+            "	AND rru.user_id = #{userId}"
+    })
+    List<Role> selectUserNormalRoles(@Param("orgId") String orgId, @Param("userId") String userId);
+
 
 }

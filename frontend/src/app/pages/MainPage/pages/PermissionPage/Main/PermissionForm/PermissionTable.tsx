@@ -46,6 +46,7 @@ interface PermissionTableProps {
   dataSource: DataSourceViewModel[] | undefined;
   resourceLoading: boolean;
   privileges: Privilege[] | undefined;
+  rolePrivileges: Privilege[] | undefined;
   onPrivilegeChange: (
     treeData: DataSourceTreeNode[],
   ) => (
@@ -64,6 +65,7 @@ export const PermissionTable = memo(
     dataSource,
     resourceLoading,
     privileges,
+    rolePrivileges,
     onPrivilegeChange,
     vizSubTypes,
   }: PermissionTableProps) => {
@@ -79,6 +81,7 @@ export const PermissionTable = memo(
         return setTreeDataWithPrivilege(
           originTreeData,
           [...privileges],
+          [...(rolePrivileges || [])],
           viewpoint,
           viewpointType,
           dataSourceType,
@@ -93,6 +96,7 @@ export const PermissionTable = memo(
       dataSourceType,
       dataSource,
       privileges,
+      rolePrivileges,
       vizSubTypes,
     ]);
 
@@ -117,36 +121,92 @@ export const PermissionTable = memo(
       [treeData, onPrivilegeChange],
     );
 
+    const rolePrivilegeChange: () => void = () => {};
+
     const columns = useMemo(() => {
-      const columns: TableColumnProps<DataSourceTreeNode>[] = [
-        {
-          dataIndex: 'name',
-          title:
-            viewpoint === Viewpoints.Resource
-              ? t('subjectName')
-              : t('resourceName'),
-        },
-        {
-          title: t('privileges'),
-          align: 'center' as const,
-          width: getPrivilegeSettingWidth(
-            viewpoint,
-            viewpointType,
-            dataSourceType,
-            vizSubTypes,
-          ),
-          render: (_, record) => (
-            <PrivilegeSetting
-              record={record}
-              viewpoint={viewpoint}
-              viewpointType={viewpointType}
-              dataSourceType={dataSourceType}
-              onChange={privilegeChange}
-              vizSubTypes={vizSubTypes}
-            />
-          ),
-        },
-      ];
+      const columns: TableColumnProps<DataSourceTreeNode>[] =
+        viewpointType === SubjectTypes.UserRole
+          ? [
+              {
+                dataIndex: 'name',
+                title: t('resourceName'),
+              },
+              {
+                title: t('subPrivileges'),
+                align: 'center' as const,
+                width: getPrivilegeSettingWidth(
+                  viewpoint,
+                  viewpointType,
+                  dataSourceType,
+                  vizSubTypes,
+                ),
+                render: (_, record) => (
+                  <PrivilegeSetting
+                    record={record}
+                    permissionArrayName={'permissionArray'}
+                    viewpoint={viewpoint}
+                    viewpointType={viewpointType}
+                    dataSourceType={dataSourceType}
+                    onChange={privilegeChange}
+                    vizSubTypes={vizSubTypes}
+                    disabled={false}
+                  />
+                ),
+              },
+              {
+                title: t('rolePrivileges'),
+                align: 'center' as const,
+                width: getPrivilegeSettingWidth(
+                  viewpoint,
+                  viewpointType,
+                  dataSourceType,
+                  vizSubTypes,
+                ),
+                render: (_, record) => (
+                  <PrivilegeSetting
+                    record={record}
+                    permissionArrayName={'rolePermissionArray'}
+                    viewpoint={viewpoint}
+                    viewpointType={viewpointType}
+                    dataSourceType={dataSourceType}
+                    onChange={rolePrivilegeChange}
+                    vizSubTypes={vizSubTypes}
+                    disabled={true}
+                  />
+                ),
+              },
+            ]
+          : [
+              {
+                dataIndex: 'name',
+                title:
+                  viewpoint === Viewpoints.Resource
+                    ? t('subjectName')
+                    : t('resourceName'),
+              },
+              {
+                title: t('privileges'),
+                align: 'center' as const,
+                width: getPrivilegeSettingWidth(
+                  viewpoint,
+                  viewpointType,
+                  dataSourceType,
+                  vizSubTypes,
+                ),
+                render: (_, record) => (
+                  <PrivilegeSetting
+                    record={record}
+                    permissionArrayName={'permissionArray'}
+                    viewpoint={viewpoint}
+                    viewpointType={viewpointType}
+                    dataSourceType={dataSourceType}
+                    onChange={privilegeChange}
+                    vizSubTypes={vizSubTypes}
+                    disabled={false}
+                  />
+                ),
+              },
+            ];
       return columns;
     }, [
       viewpoint,
@@ -175,7 +235,7 @@ export const PermissionTable = memo(
           dataSource={filteredData}
           loading={resourceLoading}
           pagination={false}
-          size="middle"
+          size="small"
           expandable={{
             expandedRowKeys,
             onExpandedRowsChange: onExpand,

@@ -87,6 +87,7 @@ const slice = createSlice({
         index: null,
         isFolder: false,
         permissionArray: getDefaultPermissionArray(),
+        rolePermissionArray: getDefaultPermissionArray(),
       }));
     });
     builder.addCase(getMembers.rejected, state => {
@@ -107,6 +108,7 @@ const slice = createSlice({
         index: null,
         isFolder: false,
         permissionArray: getDefaultPermissionArray(),
+        rolePermissionArray: getDefaultPermissionArray(),
       }));
     });
     builder.addCase(getRoles.rejected, state => {
@@ -129,6 +131,7 @@ const slice = createSlice({
           parentId: parentId === null ? root.id : parentId,
           isFolder,
           permissionArray: getDefaultPermissionArray(),
+          rolePermissionArray: getDefaultPermissionArray(),
         })),
       );
     });
@@ -152,6 +155,7 @@ const slice = createSlice({
           parentId: parentId === null ? root.id : parentId,
           isFolder,
           permissionArray: getDefaultPermissionArray(),
+          rolePermissionArray: getDefaultPermissionArray(),
         })),
       );
     });
@@ -175,6 +179,7 @@ const slice = createSlice({
           index,
           isFolder,
           permissionArray: getDefaultPermissionArray(),
+          rolePermissionArray: getDefaultPermissionArray(),
         })),
       );
     });
@@ -203,6 +208,7 @@ const slice = createSlice({
           relType: relType,
           relId: relId,
           permissionArray: getDefaultPermissionArray(),
+          rolePermissionArray: getDefaultPermissionArray(),
         })),
       );
     });
@@ -229,6 +235,7 @@ const slice = createSlice({
           index,
           isFolder,
           permissionArray: getDefaultPermissionArray(),
+          rolePermissionArray: getDefaultPermissionArray(),
         })),
       );
     });

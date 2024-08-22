@@ -922,7 +922,8 @@
         "selectRole": "Select role",
         "selectUser": "Select members",
         "save": "Save",
-        "selectModule": "Select Module"
+        "selectModule": "Select Module",
+        "genEisMenu": "generate EIS menu"
       },
       "shareList": {
         "shareList": "Share link list",
@@ -1601,6 +1602,8 @@
     "resourceName": "Resource Name",
     "subjectName": "Subject Name",
     "privileges": "Privileges",
+    "subPrivileges": "Subject Privileges",
+    "rolePrivileges": "Role Privileges",
     "add": "Create ",
     "viewpoint": {
       "subject": "Subject view",

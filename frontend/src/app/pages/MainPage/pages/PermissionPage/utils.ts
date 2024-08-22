@@ -52,6 +52,7 @@ export function generateRootNode(
     index: null,
     isFolder: true,
     permissionArray: getDefaultPermissionArray(vizId),
+    rolePermissionArray: getDefaultPermissionArray(vizId),
   };
 }
 
