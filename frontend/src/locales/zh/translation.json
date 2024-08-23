@@ -1224,7 +1224,7 @@
       "publishSuccess": "发布成功",
       "unpublishSuccess": "取消发布成功",
       "empty": "请在左侧列表选择可视化",
-      "closeOther": "关闭其他",
+      "closeOther": "关闭其它",
       "closeAll": "关闭所有"
     }
   },
@@ -1246,7 +1246,7 @@
       "cancel": "取消",
       "execute": "执行",
       "warning": "有未执行的修改，是否执行？",
-      "closeOther": "关闭其他",
+      "closeOther": "关闭其它",
       "closeAll": "关闭所有"
     },
     "editor": {
@@ -1696,7 +1696,7 @@
     "name": "名称",
     "description": "描述",
     "deleteOrg": "删除组织",
-    "deleteOrgDesc": "删除组织时，会将组织内所有资源、成员、角色和其他配置信息一并永久删除，请谨慎操作。",
+    "deleteOrgDesc": "删除组织时，会将组织内所有资源、成员、角色和其它配置信息一并永久删除，请谨慎操作。",
     "cancel": "取消",
     "delete": "确定删除",
     "enterOrgName": "输入组织名称确认删除"
