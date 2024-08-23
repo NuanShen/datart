@@ -27,7 +27,7 @@ export enum RowPermissionByType {
   visitor = 'VISITOR',
 }
 
-export enum SuperModuleType {
+export enum SuperModules {
   PM_M009 = '运营报表',
   FIN_M005 = '财务报表',
   BM_M004 = '预算报表',

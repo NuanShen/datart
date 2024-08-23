@@ -235,7 +235,7 @@ const ShareManageModal: FC<{
           render: (value, share, index) => {
             return (
               <Space>
-                <Button
+                {/*<Button
                   type="primary"
                   ghost
                   onClick={() => {
@@ -243,7 +243,7 @@ const ShareManageModal: FC<{
                   }}
                 >
                   {t('shareList.copy')}
-                </Button>
+                </Button>*/}
                 <Button
                   type="primary"
                   ghost
@@ -292,7 +292,7 @@ const ShareManageModal: FC<{
 
     return (
       <StyledShareLinkModal
-        width={1500}
+        width={1200}
         title={
           <ModalHeader>
             <span>{t('shareList.shareList')}</span>

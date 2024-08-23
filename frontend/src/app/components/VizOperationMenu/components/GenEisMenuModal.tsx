@@ -16,26 +16,14 @@
  * limitations under the License.
  */
 
-import { DatePicker, Form, Modal, Radio, Select, Space } from 'antd';
+import { Form, Modal, Select } from 'antd';
 import { FormItemEx } from 'app/components';
 import useI18NPrefix from 'app/hooks/useI18NPrefix';
 import { useMemberSlice } from 'app/pages/MainPage/pages/MemberPage/slice';
-import {
-  selectMembers,
-  selectRoles as rdxSelectRoles,
-} from 'app/pages/MainPage/pages/MemberPage/slice/selectors';
-import {
-  getMembers,
-  getRoles,
-} from 'app/pages/MainPage/pages/MemberPage/slice/thunks';
-import { selectIsOrgOwner } from 'app/pages/MainPage/slice/selectors';
-import { TIME_FORMATTER } from 'globalConstants';
-import moment from 'moment';
-import { FC, memo, useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { FC, memo, useCallback } from 'react';
 import styled from 'styled-components/macro';
 import { SPACE } from 'styles/StyleConstants';
-import { AuthenticationModeType, RowPermissionByType, SuperModuleType } from './slice/constants';
+import { SuperModules } from './slice/constants';
 import { ShareDetail } from './slice/type';
 
 const GenEisMenuModal: FC<{
@@ -49,18 +37,6 @@ const GenEisMenuModal: FC<{
   useMemberSlice();
 
   const t = useI18NPrefix(`viz.action`);
-  const dispatch = useDispatch();
-  const [expiryDate, setExpiryDate] = useState<string | Date>('');
-  const [authenticationMode, setAuthenticationMode] = useState(
-    AuthenticationModeType.none,
-  );
-  const [rowPermissionBy, setRowPermissionBy] = useState('');
-  const [selectUsers, setSelectUsers] = useState<string[] | null>([]);
-  const [selectRoles, setSelectRoles] = useState<string[] | null>([]);
-  const [btnLoading, setBtnLoading] = useState<boolean>(false);
-  const usersList = useSelector(selectMembers);
-  const rolesList = useSelector(rdxSelectRoles);
-  const isOwner = useSelector(selectIsOrgOwner);
 
   const handleOkFn = useCallback(
     async ({
@@ -69,91 +45,17 @@ const GenEisMenuModal: FC<{
       roles,
       users,
       rowPermissionBy,
-    }) => {
-      setBtnLoading(true);
-
-      try {
-        let paramsData = {
-          expiryDate,
-          authenticationMode,
-          roles,
-          users,
-          rowPermissionBy,
-        };
-        if (shareData) {
-          paramsData = Object.assign({}, shareData, paramsData);
-        }
-
-        await onOk(paramsData);
-        setBtnLoading(false);
-      } catch (err) {
-        setBtnLoading(false);
-        throw err;
-      }
-    },
+    }) => {},
     [onOk, shareData],
   );
 
-  const handleAuthenticationMode = useCallback(async e => {
-    const value = e.target.value;
-
-    setSelectRoles([]);
-    setSelectUsers([]);
-    setRowPermissionBy('');
-
-    if (value === AuthenticationModeType.login) {
-      setRowPermissionBy(RowPermissionByType.visitor);
-    }
-
-    setAuthenticationMode(e.target.value);
-  }, []);
-
-  const handleRowPermissionBy = useCallback(e => {
-    setRowPermissionBy(e.target.value);
-  }, []);
-
-  const handleChangeMembers = useCallback(users => {
-    setSelectUsers(users);
-  }, []);
-
-  const handleChangeRoles = useCallback(roles => {
-    setSelectRoles(roles);
-  }, []);
-
-  const handleDefauleValue = useCallback((shareData: ShareDetail) => {
-    setExpiryDate(shareData.expiryDate);
-    setAuthenticationMode(shareData.authenticationMode);
-    setRowPermissionBy(shareData.rowPermissionBy);
-    setSelectUsers(shareData.users);
-    setSelectRoles(shareData.roles);
-  }, []);
-
-  useEffect(() => {
-    if (isOwner) {
-      dispatch(getRoles(orgId));
-      dispatch(getMembers(orgId));
-    }
-  }, [orgId, dispatch, isOwner]);
-
-  useEffect(() => {
-    shareData && handleDefauleValue(shareData);
-  }, [handleDefauleValue, shareData]);
-
   return (
     <StyledGenEisMenuModal
-      title={t('share.shareLink')}
+      title={t('share.genEisMenu')}
       visible={visibility}
       okText={t('share.save')}
-      onOk={() =>
-        handleOkFn?.({
-          expiryDate,
-          authenticationMode,
-          roles: selectRoles,
-          users: selectUsers,
-          rowPermissionBy,
-        })
-      }
-      okButtonProps={{ loading: btnLoading }}
+      onOk={() => handleOkFn?.({})}
+      okButtonProps={{ loading: false }}
       onCancel={onCancel}
       destroyOnClose
       forceRender
@@ -166,20 +68,19 @@ const GenEisMenuModal: FC<{
       >
         <FormItemEx label={t('share.selectModule')}>
           <StyledSelection
-            onChange={handleChangeMembers}
+            onChange={undefined}
             placeholder={t('share.selectModule')}
             maxTagCount="responsive"
             optionFilterProp="label"
-            value={selectUsers || []}
+            value={[]}
           >
-            <Select.Option key={1} value={'PM_M009'} label={'运营报表'}>{'运营报表'}</Select.Option>
-            <Select.Option key={2} value={'FIN_M005'} label={'财务报表'}>{'财务报表'}</Select.Option>
-            <Select.Option key={4} value={'BM_M004'} label={'预算报表'}>{'预算报表'}</Select.Option>
-            <Select.Option key={5} value={'CRM_M008'} label={'商务报表'}>{'商务报表'}</Select.Option>
-            <Select.Option key={6} value={'COMMON_M003'} label={'系统报表'}>{'系统报表'}</Select.Option>
-            <Select.Option key={7} value={'FILEMANAGE_M003'} label={'质量报表'}>{'质量报表'}</Select.Option>
-            <Select.Option key={8} value={'PROD_M003'} label={'产品报表'}>{'产品报表'}</Select.Option>
-            <Select.Option key={9} value={'HR_M010'} label={'人力报表'}>{'人力报表'}</Select.Option>
+            {Object.keys(SuperModules).map(key => {
+              return (
+                <Select.Option key={key} value={key} label={SuperModules[key]}>
+                  {SuperModules[key]}
+                </Select.Option>
+              );
+            })}
           </StyledSelection>
         </FormItemEx>
       </Form>

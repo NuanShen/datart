@@ -182,10 +182,10 @@ const ShareLinkModal: FC<{
             value={authenticationMode}
           >
             <Radio value={AuthenticationModeType.none}>{t('share.NONE')}</Radio>
-            <Radio value={AuthenticationModeType.code}>{t('share.CODE')}</Radio>
+            {/*<Radio value={AuthenticationModeType.code}>{t('share.CODE')}</Radio>
             <Radio value={AuthenticationModeType.login}>
               {t('share.LOGIN')}
-            </Radio>
+            </Radio>*/}
           </Radio.Group>
         </FormItemEx>
         {authenticationMode === AuthenticationModeType.login && (
