@@ -389,6 +389,7 @@ public class RoleServiceImpl extends BaseService implements RoleService {
                 roleIds.add(role.getId());
                 permissions.setOrgOwner(role.getId().equals(orgOwnerRole.getId()));
             }
+            populateRolePermissions(permissions);
         } else if (subjectType == SubjectType.USER) {
             List<Role> roles = roleMapper.selectUserRoles(orgId, subjectId);
             for (Role r : roles) {
@@ -415,23 +416,28 @@ public class RoleServiceImpl extends BaseService implements RoleService {
             permissions.getPermissionInfos().addAll(convertPermissionInfo(groupedResource.get(key), subjectType, subjectId));
         }
 
-        if (subjectType == SubjectType.USER_ROLE) {
-            List<Role> roles = roleMapper.selectUserNormalRoles(orgId, subjectId);
-            if (CollectionUtils.isEmpty(roles)) {
-                return permissions;
-            }
-            Set<String> collect = roles.stream().map(Role::getId).collect(Collectors.toSet());
-            List<RelRoleResource> relRoleResources = rrrMapper.selectByRoleIds(collect);
-            if (CollectionUtils.isEmpty(relRoleResources)) {
-                return permissions;
-            }
-            Map<String, List<RelRoleResource>> stringListMap = relRoleResources.stream().collect(Collectors.groupingBy(RelRoleResource::getResourceType));
-            for (String key : stringListMap.keySet()) {
-                permissions.getRolePermissionInfos().addAll(convertPermissionInfo(stringListMap.get(key), subjectType, subjectId));
-            }
-        }
-
         return permissions;
+    }
+
+    /**
+     * 查询用户来取角色的授权
+     *
+     * @param permissions
+     */
+    private void populateRolePermissions(SubjectPermissions permissions) {
+        List<Role> roles = roleMapper.selectUserNormalRoles(permissions.getOrgId(), permissions.getSubjectId());
+        if (CollectionUtils.isEmpty(roles)) {
+            return;
+        }
+        Set<String> collect = roles.stream().map(Role::getId).collect(Collectors.toSet());
+        List<RelRoleResource> resourceList = rrrMapper.selectByRoleIds(collect);
+        if (CollectionUtils.isEmpty(resourceList)) {
+            return;
+        }
+        Map<String, List<RelRoleResource>> groupedResource = resourceList.stream().collect(Collectors.groupingBy(RelRoleResource::getResourceType));
+        for (String key : groupedResource.keySet()) {
+            permissions.getRolePermissionInfos().addAll(convertPermissionInfo(groupedResource.get(key), permissions.getSubjectType(), permissions.getSubjectId()));
+        }
     }
 
     @Override
