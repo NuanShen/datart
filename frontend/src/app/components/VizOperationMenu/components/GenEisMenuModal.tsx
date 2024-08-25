@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { Form, Modal, Select } from 'antd';
+import {Form, Modal, Select, TreeSelect} from 'antd';
 import { FormItemEx } from 'app/components';
 import useI18NPrefix from 'app/hooks/useI18NPrefix';
 import { useMemberSlice } from 'app/pages/MainPage/pages/MemberPage/slice';
@@ -45,7 +45,9 @@ const GenEisMenuModal: FC<{
       roles,
       users,
       rowPermissionBy,
-    }) => {},
+    }) => {
+      console.log('expiryDate', expiryDate);
+    },
     [onOk, shareData],
   );
 
@@ -82,6 +84,14 @@ const GenEisMenuModal: FC<{
               );
             })}
           </StyledSelection>
+        </FormItemEx>
+        <FormItemEx label={t('share.selectRole')}>
+          <TreeSelect
+            placeholder={t('share.selectRole')}
+            treeData={[]}
+            allowClear
+            onChange={() => {}}
+          />
         </FormItemEx>
       </Form>
     </StyledGenEisMenuModal>
