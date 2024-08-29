@@ -182,6 +182,7 @@ const VizHeader: FC<{
         {allowShare && (
           <ShareManageModal
             vizId={backendChartId as string}
+            title={title}
             orgId={orgId as string}
             vizType="DATACHART"
             visibility={showShareLinkModal}

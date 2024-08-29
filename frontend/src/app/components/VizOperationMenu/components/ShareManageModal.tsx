@@ -25,10 +25,11 @@ import { SPACE_TIMES } from 'styles/StyleConstants';
 import { getServerDomain, request2 } from 'utils/request';
 import GenEisMenuModal from './GenEisMenuModal';
 import ShareLinkModal from './ShareLinkModal';
-import { ShareDetail } from './slice/type';
+import { EisMenuDetail, ShareDetail } from './slice/type';
 
 const ShareManageModal: FC<{
   vizId: string;
+  title: string;
   orgId: string;
   vizType: string;
   visibility: boolean;
@@ -55,6 +56,7 @@ const ShareManageModal: FC<{
     onCancel,
     vizType,
     vizId,
+    title,
     orgId,
   }) => {
     const [showShareLinkModal, setShowShareLinkModal] = useState(false);
@@ -63,6 +65,7 @@ const ShareManageModal: FC<{
     const [manipulatedData, setManipulatedData] = useState<ShareDetail | null>(
       null,
     );
+    const [eisMenuData, setEisMenuData] = useState<EisMenuDetail | null>(null);
     const t = useI18NPrefix(`viz.action`);
 
     const fetchShareListFn = useCallback(async () => {
@@ -112,6 +115,25 @@ const ShareManageModal: FC<{
       [setShowShareLinkModal, listData, onGenerateShareLink, vizType],
     );
 
+    const creatEisMenuFn = useCallback(
+      async paramsData => {
+        try {
+          const { data } = await request2({
+            url: `/shares/genEisMenu`,
+            method: 'POST',
+            data: paramsData,
+          });
+          console.log('data', data);
+          message.success('保存成功');
+          setShowGenEisMenuModal(false);
+        } catch (err) {
+          message.error('保存失败：' + err);
+          throw err;
+        }
+      },
+      [setShowGenEisMenuModal],
+    );
+
     const deleteShareLinkFn = useCallback(
       async (id, index) => {
         try {
@@ -153,7 +175,7 @@ const ShareManageModal: FC<{
       [t],
     );
 
-    const handleCopyToClipboard = useCallback(
+    /*const handleCopyToClipboard = useCallback(
       shareData => {
         const copyUrl = getFullShareLinkPath(shareData);
         const ta = document.createElement('textarea');
@@ -166,10 +188,11 @@ const ShareManageModal: FC<{
         message.success(t('shareList.copySuccess'));
       },
       [t, getFullShareLinkPath],
-    );
+    );*/
 
     const handleCancelModalFn = useCallback(() => {
       setManipulatedData(null);
+      setEisMenuData(null);
       setShowShareLinkModal(false);
       setShowGenEisMenuModal(false);
     }, []);
@@ -180,18 +203,21 @@ const ShareManageModal: FC<{
     }, []);
 
     const handleGenEisMenuFn = useCallback(
-      (share: ShareDetail) => {
-        let linkPath = getFullShareLinkPath(share);
-
+      (eisMenu: EisMenuDetail) => {
+        eisMenu.menuName = title;
+        eisMenu.url = getFullShareLinkPath(eisMenu);
+        eisMenu.menuType = '3';
+        eisMenu.menuTarget = 'newWin';
+        eisMenu.appId = '100';
+        eisMenu.isLeaf = '1';
+        eisMenu.levelId = '3';
+        eisMenu.menuPageFlag = '0';
+        eisMenu.datasource = 'dic';
+        setEisMenuData(eisMenu);
         setShowGenEisMenuModal(true);
       },
-      [getFullShareLinkPath],
+      [getFullShareLinkPath, title],
     );
-
-    const handleCancelGenEisMenuModalFn = useCallback(() => {
-      setManipulatedData(null);
-      setShowGenEisMenuModal(false);
-    }, []);
 
     const handleOkFn = useCallback(
       async paramsData => {
@@ -204,6 +230,14 @@ const ShareManageModal: FC<{
         setShowShareLinkModal(false);
       },
       [upDateShareLink, creatShareLinkFn],
+    );
+
+    const handleEisMenuOkFn = useCallback(
+      async paramsData => {
+        await creatEisMenuFn(paramsData);
+        setShowGenEisMenuModal(false);
+      },
+      [creatEisMenuFn],
     );
 
     const columns = useMemo(() => {
@@ -279,7 +313,7 @@ const ShareManageModal: FC<{
       t,
       handleOperateFn,
       handleGenEisMenuFn,
-      handleCopyToClipboard,
+      // handleCopyToClipboard,
       deleteShareLinkFn,
       getFullShareLinkPath,
     ]);
@@ -330,11 +364,11 @@ const ShareManageModal: FC<{
           onCancel={handleCancelModalFn}
         ></ShareLinkModal>
         <GenEisMenuModal
-          shareData={manipulatedData}
+          shareData={eisMenuData}
           orgId={orgId}
           vizType={vizType}
           visibility={showGenEisMenuModal}
-          onOk={handleOkFn}
+          onOk={handleEisMenuOkFn}
           onCancel={handleCancelModalFn}
         ></GenEisMenuModal>
       </StyledShareLinkModal>

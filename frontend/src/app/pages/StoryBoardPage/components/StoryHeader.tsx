@@ -134,6 +134,7 @@ export const StoryHeader: FC<StoryHeaderProps> = memo(
             {allowShare && (
               <ShareManageModal
                 vizId={stroyBoardId as string}
+                title={title as string}
                 orgId={orgId as string}
                 vizType="STORYBOARD"
                 visibility={showShareLinkModal}

@@ -16,37 +16,73 @@
  * limitations under the License.
  */
 
-import {Form, Modal, Select, TreeSelect} from 'antd';
+import { Form, Modal, Select, TreeSelect } from 'antd';
 import { FormItemEx } from 'app/components';
 import useI18NPrefix from 'app/hooks/useI18NPrefix';
 import { useMemberSlice } from 'app/pages/MainPage/pages/MemberPage/slice';
-import { FC, memo, useCallback } from 'react';
+import { FC, memo, useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components/macro';
 import { SPACE } from 'styles/StyleConstants';
+import { request2 } from '../../../../utils/request';
 import { SuperModules } from './slice/constants';
-import { ShareDetail } from './slice/type';
+import { EisMenuDetail } from './slice/type';
 
 const GenEisMenuModal: FC<{
   orgId: string;
   vizType: string;
   visibility: boolean;
-  shareData?: ShareDetail | null;
+  shareData?: EisMenuDetail | null;
   onOk?;
   onCancel?;
 }> = memo(({ visibility, onOk, onCancel, shareData, orgId }) => {
   useMemberSlice();
-
   const t = useI18NPrefix(`viz.action`);
+  const [eisModule, setEisModule] = useState<string | null>();
+  const [eisRole, setEisRole] = useState<string[] | null>([]);
+  const [roleTree, setRoleTree] = useState([]);
+  const handleChangeModule = useCallback(module => {
+    setEisModule(module);
+  }, []);
+
+  const handleChangeRoles = useCallback(roles => {
+    setEisRole(roles);
+  }, []);
+
+  useEffect(() => {
+    const fetchDataAndCache = async () => {
+      try {
+        const { data } = await request2({
+          url: `/shares/roleTree`,
+          method: 'GET',
+        });
+        setRoleTree(data as []);
+        localStorage.setItem('roleTree', JSON.stringify(data));
+      } catch (error) {
+        console.error('角色查询失败:', error);
+      }
+    };
+
+    // 检查缓存中是否有数据
+    const cachedRoleTree = localStorage.getItem('roleTree');
+    if (cachedRoleTree) {
+      // 如果有缓存数据，使用缓存数据
+      setRoleTree(JSON.parse(cachedRoleTree));
+    } else {
+      // 如果没有缓存数据，发起 API 请求
+      fetchDataAndCache().then(r => {
+        console.log('fetchDataAndCache', r);
+      });
+    }
+  }, []);
 
   const handleOkFn = useCallback(
-    async ({
-      expiryDate,
-      authenticationMode,
-      roles,
-      users,
-      rowPermissionBy,
-    }) => {
-      console.log('expiryDate', expiryDate);
+    async ({ eisModule, eisRole }) => {
+      let paramsData = {
+        superCode: eisModule,
+        roleIds: eisRole,
+        ...shareData,
+      };
+      await onOk(paramsData);
     },
     [onOk, shareData],
   );
@@ -56,7 +92,12 @@ const GenEisMenuModal: FC<{
       title={t('share.genEisMenu')}
       visible={visibility}
       okText={t('share.save')}
-      onOk={() => handleOkFn?.({})}
+      onOk={() =>
+        handleOkFn?.({
+          eisModule,
+          eisRole,
+        })
+      }
       okButtonProps={{ loading: false }}
       onCancel={onCancel}
       destroyOnClose
@@ -70,11 +111,11 @@ const GenEisMenuModal: FC<{
       >
         <FormItemEx label={t('share.selectModule')}>
           <StyledSelection
-            onChange={undefined}
+            onChange={handleChangeModule}
             placeholder={t('share.selectModule')}
             maxTagCount="responsive"
             optionFilterProp="label"
-            value={[]}
+            value={eisModule as string}
           >
             {Object.keys(SuperModules).map(key => {
               return (
@@ -88,9 +129,10 @@ const GenEisMenuModal: FC<{
         <FormItemEx label={t('share.selectRole')}>
           <TreeSelect
             placeholder={t('share.selectRole')}
-            treeData={[]}
+            treeData={roleTree}
+            multiple
             allowClear
-            onChange={() => {}}
+            onChange={handleChangeRoles}
           />
         </FormItemEx>
       </Form>

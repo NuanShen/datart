@@ -18,6 +18,8 @@
 
 package datart.server.controller;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import datart.core.base.annotations.SkipLogin;
 import datart.core.common.FileUtils;
 import datart.core.data.provider.Dataframe;
@@ -26,6 +28,7 @@ import datart.core.entity.Download;
 import datart.server.base.dto.ResponseData;
 import datart.server.base.dto.ShareInfo;
 import datart.server.base.params.*;
+import datart.server.common.EisRestUtils;
 import datart.server.service.ShareService;
 import io.swagger.annotations.ApiOperation;
 import org.apache.tomcat.util.http.fileupload.util.Streams;
@@ -137,6 +140,20 @@ public class ShareController extends BaseController {
             response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", URLEncoder.encode(file.getName(), "utf-8")));
             Streams.copy(inputStream, response.getOutputStream(), true);
         }
+    }
+
+    @ApiOperation(value = "generate eis menu")
+    @PostMapping("/genEisMenu")
+    public ResponseData<JSONObject> generateEisMenu(@RequestBody EisMenuParam eisMenu) throws Exception {
+        //当前登陆人
+        eisMenu.setOperatorUser(shareService.getCurrentUser().getUsername());
+        return ResponseData.success(EisRestUtils.generateEisMenu(eisMenu));
+    }
+
+    @ApiOperation(value = "get eis role tree")
+    @GetMapping("/roleTree")
+    public ResponseData<JSONArray> getRoleTree() throws Exception {
+        return ResponseData.success(EisRestUtils.getRoleTree(shareService.getCurrentUser().getUsername()));
     }
 
 }

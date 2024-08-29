@@ -130,6 +130,7 @@ export const TitleHeader: FC = memo(() => {
         {!isArchived && allowShare && (
           <ShareManageModal
             vizId={boardId as string}
+            title={title as string}
             orgId={orgId as string}
             vizType="DASHBOARD"
             visibility={showShareLinkModal}

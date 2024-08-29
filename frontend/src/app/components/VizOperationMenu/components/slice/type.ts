@@ -38,16 +38,16 @@ export interface EisMenuDetail {
   createBy: string;
   vizId: string;
   vizType: 'DATACHART' | 'DASHBOARD' | 'STORYBOARD';
-  menuName:string;
-  superCode:string;
-  url:string;
-  menuType:string;
-  menuTarget:string;
-  appId:string;
-  isLeaf:string;
-  levelId:string;
-  menuPageFlag:string;
-  datasource:string;
-  createUser:string;
+  menuName: string;
+  superCode: string;
+  url: string;
+  menuType: string;
+  menuTarget: string;
+  appId: string;
+  isLeaf: string;
+  levelId: string;
+  menuPageFlag: string;
+  datasource: string;
+  createUser: string;
 
 }
