@@ -6,72 +6,72 @@ spring:
     username: ${datasource.username:root}
     password: ${datasource.password:123456}
 
-# security:
-#   oauth2:
-#     client:
-#       registration:
-#         cas:
-#           provider: cas
-#           client-id: "xxxxx"
-#           client-name: "Sign in with CAS"
-#           client-secret: "xxx"
-#           authorization-grant-type: authorization_code
-#           client-authentication-method: post
-#           redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
-#           scope: userinfo
-#       provider:
-#         cas:
-#           authorization-uri: https://cas.xxx.com/cas/oauth2.0/authorize
-#           token-uri: https://cas.xxx.com/cas/oauth2.0/accessToken
-#           user-info-uri: https://cas.xxx.com/cas/oauth2.0/profile
-#           user-name-attribute: id
-#           userMapping:
-#             email: "attributes.email"
-#             name: "attributes.name"
-#             avatar: "attributes.avatar"
+  # security:
+  #   oauth2:
+  #     client:
+  #       registration:
+  #         cas:
+  #           provider: cas
+  #           client-id: "xxxxx"
+  #           client-name: "Sign in with CAS"
+  #           client-secret: "xxx"
+  #           authorization-grant-type: authorization_code
+  #           client-authentication-method: post
+  #           redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+  #           scope: userinfo
+  #       provider:
+  #         cas:
+  #           authorization-uri: https://cas.xxx.com/cas/oauth2.0/authorize
+  #           token-uri: https://cas.xxx.com/cas/oauth2.0/accessToken
+  #           user-info-uri: https://cas.xxx.com/cas/oauth2.0/profile
+  #           user-name-attribute: id
+  #           userMapping:
+  #             email: "attributes.email"
+  #             name: "attributes.name"
+  #             avatar: "attributes.avatar"
 
-# ldap config
+  # ldap config
 
-# ldap:
-#   urls: ldap://{IP}:{PORT}
-#   base: xxx
-#   username: {username}
-#   password: {password}
-#   attribute-mapping:
-#     username: cn # 自定义登录用户名对应属性名
+  # ldap:
+  #   urls: ldap://{IP}:{PORT}
+  #   base: xxx
+  #   username: {username}
+  #   password: {password}
+  #   attribute-mapping:
+  #     username: cn # 自定义登录用户名对应属性名
 
-# mail config
+  # mail config
 
-# mail:
-#   host: { 邮箱服务地址 }
-#   port: { 端口号 }
-#   username: { 邮箱地址 }
-#   fromAddress:
-#   password: { 邮箱服务密码 }
-#   senderName: { 发送者昵称 }
-#
-#   properties:
-#     smtp:
-#       starttls:
-#         enable: true
-#         required: true
-#       auth: true
-#     mail:
-#       smtp:
-#         ssl:
-#           enable: true
+  # mail:
+  #   host: { 邮箱服务地址 }
+  #   port: { 端口号 }
+  #   username: { 邮箱地址 }
+  #   fromAddress:
+  #   password: { 邮箱服务密码 }
+  #   senderName: { 发送者昵称 }
+  #
+  #   properties:
+  #     smtp:
+  #       starttls:
+  #         enable: true
+  #         required: true
+  #       auth: true
+  #     mail:
+  #       smtp:
+  #         ssl:
+  #           enable: true
 
+  # redis config
 
-# redis config
-
-#  redis:
-#    port: 6379
-#    host: { HOST }
-
+  redis:
+    port: ${redis.port:}
+    host: ${redis.host:}
+    password: ${redis.password:}
+    database: ${redis.database:}
 
 server:
   port: ${server.port:8080}
-  address: ${server.ip:0.0.0.0}
+  address: ${server.address:0.0.0.0}
   ssl:
     enabled: false
     key-store: keystore.p12 # Absolute path
@@ -86,10 +86,10 @@ datart:
     address: ${datart.address:http://127.0.0.1:8080}
 
   # 租户管理模式：platform-平台(默认)，team-团队
-  tenant-management-mode: platform
+  tenant-management-mode: ${datart.tenant-management-mode:platform}
 
   user:
-    register: true # 是否允许注册
+    register: ${datart.user.register:true} # 是否允许注册
     active:
       send-mail: ${datart.send-mail:false}  # 注册用户时是否需要邮件验证激活
       expire-hours: ${datart.register.expire-hours:48} # 注册邮件有效期/小时
@@ -98,7 +98,7 @@ datart:
 
   security:
     token:
-      secret: "d@a$t%a^r&a*t" #加密密钥
+      secret: ${security.token.secret:} #加密密钥
       timeout-min: 30  # 登录会话有效时长，单位：分钟。
 
   env:
@@ -108,3 +108,8 @@ datart:
     timeout-seconds: 60
     webdriver-type: CHROME
     webdriver-path: ${datart.webdriver-path:}
+
+  eis:
+    host: ${datart.eis.host:}
+    sysid: ${datart.eis.sysid:}
+    syssecret: ${datart.eis.syssecret:}
