@@ -14,3 +14,4 @@
 /logs/*.log
 /bin/h2/datart.demo.trace.db
 /files/download/*
+/.vscode/settings.json

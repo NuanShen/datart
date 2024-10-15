@@ -42,7 +42,7 @@ public class EisRestUtils {
             } else {
                 OkHttpClient client = new OkHttpClient().newBuilder().build();
                 Request request = new Request.Builder()
-                        .url(String.format("%s/api/gettoken?sysid=%s&syssecret=%s", HOST, SYSID, SYSSECRET))
+                        .url(String.format("%s/gettoken?sysid=%s&syssecret=%s", (HOST.endsWith("api") ? HOST : HOST + "/api"), SYSID, SYSSECRET))
                         .method("GET", null)
                         .addHeader("User-Agent", "Datart/1.0.0 (https://datart.tydic.com)")
                         .addHeader("Accept", "*/*")
