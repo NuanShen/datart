@@ -29,11 +29,11 @@ export enum RowPermissionByType {
 
 export enum SuperModules {
   PM_M009 = '运营报表',
+  HR_M012 = '人力报表',
   FIN_M005 = '财务报表',
   BM_M004 = '预算报表',
   CRM_M008 = '商务报表',
-  COMMON_M003 = '系统报表',
   FILEMANAGE_M003 = '质量报表',
-  PROD_M003 = '产品报表',
-  HR_M010 = '人力报表',
+  PROD_M004 = '产品报表',
+  COMMON_M003 = '系统报表',
 }
