@@ -1,6 +1,6 @@
 import {
   FolderAddFilled,
-  FundProjectionScreenOutlined,
+  /*FundProjectionScreenOutlined,*/
   MenuUnfoldOutlined,
 } from '@ant-design/icons';
 import { ListSwitch } from 'app/components';
@@ -61,11 +61,11 @@ export const Sidebar = memo(
     const listTitles = useMemo(
       () => [
         { key: 'folder', icon: <FolderAddFilled />, text: t('folder') },
-        {
+        /*{
           key: 'presentation',
           icon: <FundProjectionScreenOutlined />,
           text: t('presentation'),
-        },
+        },*/
       ],
       [t],
     );

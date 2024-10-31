@@ -333,9 +333,9 @@ export const VizPermissionForm = memo(
             <Form.Item label={t('resourceDetail')}>
               <Radio.Group value={vizType} onChange={vizTypeChange}>
                 <Radio value={VizResourceSubTypes.Folder}>{t('folder')}</Radio>
-                <Radio value={VizResourceSubTypes.Storyboard}>
+                {/*<Radio value={VizResourceSubTypes.Storyboard}>
                   {t('presentation')}
-                </Radio>
+                </Radio>*/}
               </Radio.Group>
             </Form.Item>
             <Form.Item
