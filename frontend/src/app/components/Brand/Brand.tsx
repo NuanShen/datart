@@ -12,7 +12,7 @@ export function Brand() {
   return (
     <Header>
       <img src={logo} alt="logo" />
-      <h1>datart</h1>
+      <h1>天源迪科数据分析平台</h1>
     </Header>
   );
 }

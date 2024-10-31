@@ -67,8 +67,8 @@ export function AppRouter() {
     <ConfigProvider locale={antdLocales[i18n.language]}>
       <BrowserRouter basename={PUBLIC_URL}>
         <Helmet
-          titleTemplate="%s - Datart"
-          defaultTitle="Datart"
+          titleTemplate="%s - 天源迪科数据分析平台"
+          defaultTitle="天源迪科数据分析平台"
           htmlAttributes={{ lang: i18n.language }}
         >
           <meta name="description" content="Data Art" />
