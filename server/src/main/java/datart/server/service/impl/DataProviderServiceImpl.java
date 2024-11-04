@@ -115,7 +115,15 @@ public class DataProviderServiceImpl extends BaseService implements DataProvider
             for (String key : properties.keySet()) {
                 Object val = properties.get(key);
                 if (val instanceof String) {
-                    properties.put(key, decryptValue(val.toString()));
+                    String string = val.toString();
+                    try {
+                        if (key.equals("password")) {
+                            string = AESUtil.decryptFrontend(val.toString());
+                        }
+                    } catch (Exception e) {
+                        string = val.toString();
+                    }
+                    properties.put(key, decryptValue(string));
                 }
             }
         }

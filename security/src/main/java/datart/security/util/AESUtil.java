@@ -23,16 +23,21 @@ import datart.core.base.exception.Exceptions;
 import datart.core.common.Application;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 
 @Slf4j
 public class AESUtil {
+
+    // 需要和前端保持一致
+    private static final String SECRET_KEY = System.getenv("SECRET_KEY");
 
     public static String encrypt(String src, String securityKey) {
         try {
@@ -86,4 +91,36 @@ public class AESUtil {
         return new SecretKeySpec(encoded, "AES");
     }
 
+    /**
+     * 解密前端加密的密文
+     *
+     * @param encryptText 加密后的密文
+     * @return 解密后的原始密码
+     */
+    public static String decryptFrontend(String encryptText) {
+        try {
+            if (StringUtils.isEmpty(encryptText)) {
+                return encryptText;
+            }
+
+            IvParameterSpec iv = new IvParameterSpec(SECRET_KEY.getBytes());
+            SecretKeySpec secretKey = new SecretKeySpec(SECRET_KEY.getBytes(), "AES");
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            cipher.init(Cipher.DECRYPT_MODE, secretKey, iv);
+            return new String(cipher.doFinal(Base64.decodeBase64(encryptText)), StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            Exceptions.e(e);
+        }
+        return null;
+    }
+
+    public static void main(String[] args) {
+        try {
+            System.out.println(SECRET_KEY);
+            String encryptedPassword = decryptFrontend("m4QNlV0z+fihdECTTzMHyA==");
+            System.out.println(encryptedPassword);
+        } catch (Exception e) {
+            Exceptions.e(e);
+        }
+    }
 }

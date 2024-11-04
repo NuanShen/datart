@@ -40,6 +40,7 @@ import datart.security.base.JwtToken;
 import datart.security.base.PasswordToken;
 import datart.security.base.RoleType;
 import datart.security.exception.AuthException;
+import datart.security.util.AESUtil;
 import datart.security.util.JwtUtils;
 import datart.security.util.SecurityUtils;
 import datart.server.base.dto.OrganizationBaseInfo;
@@ -279,6 +280,7 @@ public class UserServiceImpl extends BaseService implements UserService {
     @Override
     public String login(PasswordToken passwordToken) {
         try {
+            passwordToken.setPassword(AESUtil.decryptFrontend(passwordToken.getPassword()));
             securityManager.login(passwordToken);
         } catch (Exception e) {
             String tokenStr = ldapLogin(passwordToken);

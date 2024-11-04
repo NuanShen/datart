@@ -410,14 +410,12 @@ public class SourceServiceImpl extends BaseService implements SourceService {
         if (!CollectionUtils.isEmpty(configTemplate.getAttributes())) {
             JSONObject jsonObject = JSON.parseObject(config);
             for (DataProviderConfigTemplate.Attribute attribute : configTemplate.getAttributes()) {
-                if (attribute.isEncrypt()
-                        && jsonObject.containsKey(attribute.getName())
-                        && StringUtils.isNotBlank(jsonObject.get(attribute.getName()).toString())) {
+                if (attribute.isEncrypt() && jsonObject.containsKey(attribute.getName()) && StringUtils.isNotBlank(jsonObject.get(attribute.getName()).toString())) {
                     String val = jsonObject.get(attribute.getName()).toString();
                     if (val.startsWith(Const.ENCRYPT_FLAG)) {
                         jsonObject.put(attribute.getName(), val);
                     } else {
-                        jsonObject.put(attribute.getName(), Const.ENCRYPT_FLAG + AESUtil.encrypt(val));
+                        jsonObject.put(attribute.getName(), Const.ENCRYPT_FLAG + AESUtil.encrypt(AESUtil.decryptFrontend(val)));
                     }
                 }
             }

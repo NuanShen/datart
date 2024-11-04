@@ -28,6 +28,7 @@ import { getOauth2Clients, login } from 'app/slice/thunks';
 import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import { encrypt } from 'utils/crypto';
 import { LoginForm } from './LoginForm';
 
 export function LoginPage() {
@@ -44,6 +45,7 @@ export function LoginPage() {
 
   const onLogin = useCallback(
     values => {
+      values.password = encrypt(values.password);
       dispatch(
         login({
           params: values,

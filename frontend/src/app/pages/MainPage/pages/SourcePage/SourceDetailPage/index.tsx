@@ -50,6 +50,7 @@ import {
   SPACE_MD,
   SPACE_TIMES,
 } from 'styles/StyleConstants';
+import { encrypt } from 'utils/crypto';
 import { request2 } from 'utils/request';
 import {
   errorHandle,
@@ -227,6 +228,11 @@ export function SourceDetailPage() {
     const { name } = dataProviders[type];
     setTestLoading(true);
     try {
+      if (config['password']) {
+        if (!config['password'].startsWith('_encrypted_')) {
+          config['password'] = encrypt(config['password']);
+        }
+      }
       await request2<QueryResult>({
         url: '/data-provider/test',
         method: 'POST',
@@ -244,6 +250,11 @@ export function SourceDetailPage() {
       const { name } = dataProviders[providerType];
       setTestLoading(true);
       try {
+        if (config.password) {
+          if (!config.password.startsWith('_encrypted_')) {
+            config.password = encrypt(config.password);
+          }
+        }
         const { data } = await request2<QueryResult>({
           url: '/data-provider/test',
           method: 'POST',
@@ -270,6 +281,11 @@ export function SourceDetailPage() {
     (values: SourceFormModel) => {
       const { config, ...rest } = values;
       let configStr = '';
+      if (config['password']) {
+        if (!config['password'].startsWith('_encrypted_')) {
+          config['password'] = encrypt(config['password']);
+        }
+      }
 
       try {
         configStr = JSON.stringify(config);
