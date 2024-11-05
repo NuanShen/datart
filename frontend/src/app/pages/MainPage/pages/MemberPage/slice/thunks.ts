@@ -20,6 +20,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { User } from 'app/slice/types';
 import omit from 'lodash/omit';
 import { RootState } from 'types';
+import { encrypt } from 'utils/crypto';
 import { request2 } from 'utils/request';
 import { selectEditingMember, selectEditingRole } from './selectors';
 import {
@@ -73,11 +74,17 @@ export const saveMember = createAsyncThunk<
   'member/editMember',
   async ({ type, orgId, roleIds, resolve, ...memberInfo }, { getState }) => {
     const editingMember = selectEditingMember(getState());
+    let password = {};
+    if (memberInfo.password) {
+      console.log('memberInfo.password', memberInfo.password);
+      password = { password: encrypt(memberInfo.password) };
+      console.log('enc_password', password);
+    }
     if (type === 'add') {
       const { data } = await request2<User>({
         url: `/users/${orgId}/addUser`,
         method: 'POST',
-        data: { roleIds, ...memberInfo },
+        data: { roleIds, ...memberInfo, ...password },
       });
       resolve();
       return data;
@@ -86,7 +93,7 @@ export const saveMember = createAsyncThunk<
         await request2<User>({
           url: `/users/${orgId}/updateUser`,
           method: 'PUT',
-          data: { roleIds, ...memberInfo },
+          data: { roleIds, ...memberInfo, ...password },
         });
         resolve();
         return { ...editingMember.info, ...memberInfo };

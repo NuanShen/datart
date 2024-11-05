@@ -210,6 +210,8 @@ public class UserServiceImpl extends BaseService implements UserService {
     @Override
     @Transactional
     public boolean changeUserPassword(ChangeUserPasswordParam passwordParam) {
+        passwordParam.setOldPassword(AESUtil.decryptFrontend(passwordParam.getOldPassword()));
+        passwordParam.setNewPassword(AESUtil.decryptFrontend(passwordParam.getNewPassword()));
         User user = securityManager.getCurrentUser();
         user = userMapper.selectByPrimaryKey(user.getId());
         if (!BCrypt.checkpw(passwordParam.getOldPassword(), user.getPassword())) {
@@ -405,6 +407,7 @@ public class UserServiceImpl extends BaseService implements UserService {
     @Transactional
     public User addUserToOrg(UserAddParam userAddParam, String orgId) throws MessagingException, UnsupportedEncodingException {
         securityManager.requireOrgOwner(orgId);
+        userAddParam.setPassword(AESUtil.decryptFrontend(userAddParam.getPassword()));
         if (StringUtils.isBlank(userAddParam.getPassword())) {
             userAddParam.setPassword(Const.USER_DEFAULT_PSW);
         }
@@ -453,6 +456,7 @@ public class UserServiceImpl extends BaseService implements UserService {
             log.error("The email({}) has been registered", userUpdateParam.getEmail());
             Exceptions.tr(ParamException.class, "error.param.occupied", "resource.user.email");
         }
+        userUpdateParam.setPassword(AESUtil.decryptFrontend(userUpdateParam.getPassword()));
         if (StringUtils.isBlank(userUpdateParam.getPassword())) {
             userUpdateParam.setPassword(user.getPassword());
         } else if (!userUpdateParam.getPassword().equals(user.getPassword())) {

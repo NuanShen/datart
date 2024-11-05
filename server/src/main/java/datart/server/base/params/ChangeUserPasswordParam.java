@@ -33,7 +33,7 @@ public class ChangeUserPasswordParam {
     private String oldPassword;
 
     @NotBlank(message = "Password cant't be empty")
-    @Pattern(regexp = Const.REG_USER_PASSWORD, message = "Password length should be 6-20 characters")
+    //@Pattern(regexp = Const.REG_USER_PASSWORD, message = "Password length should be 6-20 characters")
     private String newPassword;
 
 }

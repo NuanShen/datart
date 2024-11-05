@@ -26,6 +26,7 @@ import { modifyAccountPassword } from 'app/slice/thunks';
 import { ModifyUserPassword } from 'app/slice/types';
 import { FC, useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { encrypt } from 'utils/crypto';
 import {
   getConfirmPasswordValidator,
   getPasswordValidator,
@@ -58,6 +59,8 @@ export const ModifyPassword: FC<ModifyPasswordProps> = ({
 
   const formSubmit = useCallback(
     ({ confirmPassword, ...params }: ModifyUserPassword) => {
+      params.oldPassword = encrypt(params.oldPassword);
+      params.newPassword = encrypt(params.newPassword);
       dispatch(
         modifyAccountPassword({
           params,
