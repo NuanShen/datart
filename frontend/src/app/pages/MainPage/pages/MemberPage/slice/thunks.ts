@@ -76,9 +76,7 @@ export const saveMember = createAsyncThunk<
     const editingMember = selectEditingMember(getState());
     let password = {};
     if (memberInfo.password) {
-      console.log('memberInfo.password', memberInfo.password);
       password = { password: encrypt(memberInfo.password) };
-      console.log('enc_password', password);
     }
     if (type === 'add') {
       const { data } = await request2<User>({
